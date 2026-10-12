@@ -1,5 +1,51 @@
 @import "tailwindcss";
 
+body {
+  margin: 0;
+}
+
+.burger-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 12px;
+}
+
+.burger-button {
+  padding: 8px 12px;
+  border: 1px solid;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.burger-panel {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+.page-home {
+  flex: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.overlay-page {
+  padding: 20px;
+}
+
+.overlay-canvas {
+  width: 100%;
+  max-width: 960px;
+  height: auto;
+  border: 1px solid;
+}
+
 .timer-stage {
   display: flex;
   flex: 1;
