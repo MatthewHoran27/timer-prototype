@@ -39,11 +39,37 @@ body {
   padding: 20px;
 }
 
+.overlay-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.overlay-status {
+  font-size: 0.95rem;
+}
+
+.overlay-help {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.overlay-error {
+  margin: 0 0 10px;
+  color: #b91c1c;
+}
+
+.overlay-video {
+  display: none;
+}
+
 .overlay-canvas {
   width: 100%;
   max-width: 960px;
   height: auto;
   border: 1px solid;
+  cursor: grab;
 }
 
 .timer-stage {
