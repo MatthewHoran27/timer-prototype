@@ -22,6 +22,7 @@ const TIMER_HINTS: Record<TimerState, string> = {
 };
 
 export function formatTime(milliseconds: number) {
+// TODO: Add state for time format options (e.g. MM:SS.CS, SS.CS, etc.) and update this function to use the selected format.
   const totalCentiseconds = Math.floor(milliseconds / 10);
   const centiseconds = totalCentiseconds % 100;
   const totalSeconds = Math.floor(totalCentiseconds / 100);

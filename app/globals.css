@@ -100,4 +100,20 @@ body {
   font-size: 200px;
 }
 
+ .scramble-display {
+  margin-bottom: 1.5rem;
+  max-width: min(90vw, 720px);
+  text-align: center;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  text-transform: uppercase;
+ }
 
+ .scramble-diagram {
+  display: flex;
+  margin-top: 4rem;
+ }
+
+ .scramble-error {
+  margin: 0 0 1.5rem;
+  color: #b91c1c;
+ }

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { TimerState } from "@/services/timer-service";
 
-export function useTimer() {
+export function useTimer(onNewScramble: () => void | Promise<void>) {
   const [timerState, setTimerState] = useState<TimerState>("ready");
   const [elapsed, setElapsed] = useState(0);
   const timerStateRef = useRef(timerState);
@@ -25,7 +25,8 @@ export function useTimer() {
     setElapsed(performance.now() - startedAtRef.current);
     updateState("stopped");
     heldRef.current = false;
-  }, [updateState]);
+    onNewScramble();
+  }, [onNewScramble, updateState]);
 
   useEffect(() => {
     if (timerState !== "running") return;
@@ -69,21 +70,16 @@ export function useTimer() {
   const resetTimer = useCallback(() => {
     setElapsed(0);
     updateState("ready");
-  }, [updateState]);
+    onNewScramble();
+  }, [onNewScramble, updateState]);
 
   const handleButtonClick = useCallback(() => {
     if (timerState === "running") {
       stopTimer();
-      return;
-    }
-
-    if (timerState === "stopped") {
+    } else if (timerState === "stopped") {
       resetTimer();
-      return;
     }
-
-    startTimer();
-  }, [resetTimer, startTimer, stopTimer, timerState]);
+  }, [resetTimer, stopTimer, timerState]);
 
   return {
     elapsed,
