@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { TimerState } from "@/services/timer-service";
 
-export function useTimer(onNewScramble: () => void | Promise<void>) {
+export function useTimer(onNewScramble: () => Promise<boolean>) {
   const [timerState, setTimerState] = useState<TimerState>("ready");
   const [elapsed, setElapsed] = useState(0);
   const timerStateRef = useRef(timerState);
   const heldRef = useRef(false);
+  const stoppedSpacePressRef = useRef(false);
+  const scrambleRequestPendingRef = useRef(false);
   const startedAtRef = useRef(0);
 
   const updateState = useCallback((nextState: TimerState) => {
@@ -25,8 +27,7 @@ export function useTimer(onNewScramble: () => void | Promise<void>) {
     setElapsed(performance.now() - startedAtRef.current);
     updateState("stopped");
     heldRef.current = false;
-    onNewScramble();
-  }, [onNewScramble, updateState]);
+  }, [updateState]);
 
   useEffect(() => {
     if (timerState !== "running") return;
@@ -42,10 +43,12 @@ export function useTimer(onNewScramble: () => void | Promise<void>) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.code !== "Space" || event.repeat) return;
       event.preventDefault();
+      if (scrambleRequestPendingRef.current) return;
 
       if (timerStateRef.current === "running") {
         stopTimer();
       } else if (!heldRef.current) {
+        stoppedSpacePressRef.current = timerStateRef.current === "stopped";
         heldRef.current = true;
         if (timerStateRef.current !== "holding") updateState("holding");
       }
@@ -56,7 +59,25 @@ export function useTimer(onNewScramble: () => void | Promise<void>) {
       event.preventDefault();
       heldRef.current = false;
 
-      if (timerStateRef.current === "holding") startTimer();
+      if (timerStateRef.current !== "holding") return;
+
+      if (stoppedSpacePressRef.current) {
+        stoppedSpacePressRef.current = false;
+        scrambleRequestPendingRef.current = true;
+        void onNewScramble().then((generated) => {
+          scrambleRequestPendingRef.current = false;
+          if (timerStateRef.current !== "holding") return;
+
+          if (generated) {
+            startTimer();
+          } else {
+            updateState("ready");
+          }
+        });
+        return;
+      }
+
+      startTimer();
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -65,12 +86,12 @@ export function useTimer(onNewScramble: () => void | Promise<void>) {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [startTimer, stopTimer, updateState]);
+  }, [onNewScramble, startTimer, stopTimer, updateState]);
 
   const resetTimer = useCallback(() => {
     setElapsed(0);
     updateState("ready");
-    onNewScramble();
+    void onNewScramble();
   }, [onNewScramble, updateState]);
 
   const handleButtonClick = useCallback(() => {

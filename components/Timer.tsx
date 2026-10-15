@@ -26,9 +26,11 @@ export default function Timer({ initialScramble }: { initialScramble: string }) 
       const result: { scramble: string } = await response.json();
       setScramble(result.scramble);
       setScrambleError(null);
+      return true;
     } catch (error) {
       console.error("Unable to request scramble:", error);
       setScrambleError("Could not generate scramble. Try again.");
+      return false;
     }
   }, []);
   const { elapsed, handleButtonClick, timerState } = useTimer(generateNextScramble);
